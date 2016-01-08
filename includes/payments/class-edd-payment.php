@@ -897,18 +897,6 @@ final class EDD_Payment {
 		$quantity   = edd_item_quantities_enabled() ? absint( $args['quantity'] ) : 1;
 		$amount     = round( $item_price * $quantity, edd_currency_decimal_filter() );
 
-		if ( ! empty( $args['fees'] ) ) {
-			foreach ( $args['fees'] as $key => $fee ) {
-
-				if ( empty( $fee['download_id'] ) ) {
-					$args['fees'][ $key ]['download_id'] = $download_id;
-				}
-
-				$this->add_fee( $args['fees'][ $key ], false );
-
-			}
-		}
-
 		// Setup the downloads meta item
 		$new_download = array(
 			'id'       => $download->ID,
@@ -1139,7 +1127,6 @@ final class EDD_Payment {
 		if ( true === $global ) {
 			$this->fees[] = $fee;
 		}
-
 
 		$added_fee               = $fee;
 		$added_fee['action']     = 'add';

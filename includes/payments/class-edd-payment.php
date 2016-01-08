@@ -897,6 +897,17 @@ final class EDD_Payment {
 		$quantity   = edd_item_quantities_enabled() ? absint( $args['quantity'] ) : 1;
 		$amount     = round( $item_price * $quantity, edd_currency_decimal_filter() );
 
+		$fees = 0;
+		if ( ! empty( $args['fees'] ) ) {
+
+			foreach ( $args['fees'] as $key => $fee ) {
+
+				$fees += $fee['amount'];
+
+			}
+
+		}
+
 		// Setup the downloads meta item
 		$new_download = array(
 			'id'       => $download->ID,
@@ -925,7 +936,7 @@ final class EDD_Payment {
 			$subtotal -= round( $tax, edd_currency_decimal_filter() );
 		}
 
-		$total      = $subtotal - $discount + $tax;
+		$total      = $subtotal - $discount + $fees + $tax;
 
 		// Do not allow totals to go negatve
 		if( $total < 0 ) {
@@ -958,7 +969,7 @@ final class EDD_Payment {
 		$this->pending['downloads'][] = $added_download;
 		reset( $this->cart_details );
 
-		$this->increase_subtotal( $subtotal - $discount );
+		$this->increase_subtotal( $subtotal - $discount + $fees );
 		$this->increase_tax( $tax );
 
 		return true;
@@ -1127,6 +1138,7 @@ final class EDD_Payment {
 		if ( true === $global ) {
 			$this->fees[] = $fee;
 		}
+
 
 		$added_fee               = $fee;
 		$added_fee['action']     = 'add';
